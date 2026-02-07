@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  dsp-backend:
+    build: .
+    container_name: dsp-equalizer-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount dataset directory
+      - ./dataset:/app/dataset
+      # Mount models directory
+      - ./models:/app/models
+      # Mount uploads directory
+      - ./uploads:/app/uploads
+      # Mount outputs directory
+      - ./outputs:/app/outputs
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - dsp-network
+
+  dsp-frontend:
+    build: ../dsp-frontend
+    container_name: dsp-equalizer-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - dsp-backend
+    restart: unless-stopped
+    networks:
+      - dsp-network
+
+networks:
+  dsp-network:
+    driver: bridge
