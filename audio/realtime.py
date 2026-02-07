@@ -5,7 +5,7 @@ Realtime audio equalizer:
 Mic -> FFT EQ -> Speaker
 """
 
-import numpy as np
+
 import sounddevice as sd
 
 from audio.equalizer import apply_equalizer
